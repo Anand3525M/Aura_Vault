@@ -1,0 +1,88 @@
+#            _
+#    _______| |__  _ __ ___
+#   |_  / __| '_ \| '__/ __|
+#  _ / /\__ \ | | | | | (__
+# (_)___|___/_| |_|_|  \___|
+#
+# -----------------------------------------------------
+# ML4W zshrc loader
+# -----------------------------------------------------
+
+# DON'T CHANGE THIS FILE
+
+# You can define your custom configuration by adding
+# files in ~/.config/zshrc
+# or by creating a folder ~/.config/zshrc/custom
+# with copies of files from ~/.config/zshrc
+# You can also create a .zshrc_custom file in your home directory
+# -----------------------------------------------------
+
+# -----------------------------------------------------
+# Load modular configuration
+# -----------------------------------------------------
+
+for f in ~/.config/zshrc/*; do
+    if [ ! -d $f ]; then
+        c=`echo $f | sed -e "s=.config/zshrc=.config/zshrc/custom="`
+        [[ -f $c ]] && source $c || source $f
+    fi
+done
+
+# --- AURA OS UNBOUND CONFIG ---
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Two-Line Status
+FREE_DSK=$(df -h / | awk 'NR==2 {print $4}' | sed 's/G//')
+echo -e "\e[1;35m[Aura Ready]\e[0m \e[1;32mmatrix\e[0m | \e[1;32mpeek\e[0m | \e[1;32mpipe\e[0m | \e[1;32mwood\e[0m | \e[1;32mgrow\e[0m | \e[1;32mvibe\e[0m | \e[1;32mcatcat\e[0m"
+echo -e "\e[1;36m[Aura Tools]\e[0m \e[1;32mai\e[0m | \e[1;32mswarm\e[0m | \e[1;32msee\e[0m | \e[1;33midea\e[0m | \e[1;33mstudy\e[0m | \e[1;33mlookup\e[0m | \e[1;31mpurge\e[0m"
+
+# Core AI Functions
+ai() {
+  if [ -z "$1" ]; then picoclaw agent 2>/dev/null; else picoclaw agent -m "$*" 2>/dev/null; fi
+}
+swarm() {
+  echo -e "\e[1;35m[Aura Swarm Initialized]\e[0m Coordination active."
+  picoclaw gateway start 2>/dev/null &
+  picoclaw agent 2>/dev/null
+}
+see() {
+  FILE_TEXT=$(cat "$1" 2>/dev/null)
+  if [ -z "$FILE_TEXT" ]; then echo -e "\e[1;31mError: File missing\e[0m"; else picoclaw agent -m "$2. File: $FILE_TEXT" 2>/dev/null; fi
+}
+
+# --- BRAINSTORM & STUDY WORKFLOWS ---
+
+# 1. Quick Ideation (Save thoughts instantly)
+idea() {
+  echo "- $(date '+%Y-%m-%d %H:%M'): $*" >> ~/Aura_Ideas.md
+  echo -e "\e[1;32m[+] Saved to ~/Aura_Ideas.md\e[0m"
+}
+alias ideas='cat ~/Aura_Ideas.md'
+
+# 2. CS Code & Concept Helper
+study() {
+  if [ -f "$1" ]; then
+    FILE_TEXT=$(cat "$1" 2>/dev/null)
+    picoclaw agent -m "Act as a senior CS professor. Review this code, explain its time complexity (Big O), and suggest improvements: $FILE_TEXT" 2>/dev/null
+  else
+    picoclaw agent -m "Explain this computer science concept simply and accurately: $*" 2>/dev/null
+  fi
+}
+
+# 3. Web Research
+lookup() {
+  picoclaw agent -m "Search the web for the most up-to-date documentation on: $*. Give me a concise, technical summary." 2>/dev/null
+}
+
+# Standard Tools
+alert() { sleep $1 && spd-say "Time is up" && notify-send "Aura" "Finished"; }
+alias matrix='neo-matrix -D'
+alias peek='gtop'
+alias pipe='pipes-rs'
+alias wood='hollywood'
+alias grow='cbonsai -l'
+alias vibe='bash ~/.config/vibe.sh'
+alias catcat='nyancat'
+alias purge='sudo pacman -Rns $(pacman -Qtdq); sudo paccache -rk1; sudo journalctl --vacuum-size=50M'
+alias save='bash ~/.config/save.sh'

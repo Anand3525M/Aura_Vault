@@ -1,0 +1,16 @@
+{
+  "agents": {
+    "defaults": {
+      "model": "universal-free",
+      "allow_global_exec": true, "gateway_enabled": true, "gateway_enabled": true
+    }
+  },
+  "model_list": [
+    {
+      "model_name": "universal-free",
+      "model": "openrouter/openrouter/free",
+      "api_key": "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",
+      "api_base": "https://openrouter.ai/api/v1"
+    }
+  ]
+}
