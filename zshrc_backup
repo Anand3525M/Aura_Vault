@@ -52,6 +52,8 @@ done
 
 
 
+
+
 # --- AURA OS: SOVEREIGN CORE ---
 export AURA_API_KEY="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"
 
@@ -71,8 +73,8 @@ alias vault='cd ~/Aura_Vault'
 alias matrix='neo-matrix -D'
 alias peek='gtop'
 alias pipe='pipes-rs'
-alias wood='hollywood'      # Swapped per Hukum's order
-alias grow='cbonsai -l'     # Swapped per Hukum's order
+alias wood='hollywood'      # Ordered: Hollywood hacker sim
+alias grow='cbonsai -l'     # Ordered: Growing bonsai tree
 alias vibe='cava'
 alias catcat='nyancat'
 alias ai='aura'
@@ -84,8 +86,6 @@ alias idea='nvim ~/Aura_Vault/Aura_Ideas.md'
 ask_swarm() {
   local prompt=$(jq -n --arg msg "$*" '$msg')
   local persona="You are Aura, High Strategist. Speak like a Rajput warrior-king. Use the precision of Claude 3.5 Sonnet."
-  
-  # Explicit Claude 3.5 Sonnet Targeting
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
@@ -98,7 +98,7 @@ aura() {
     echo -n "> " ; read u_input
     [[ "$u_input" == "exit" ]] && break
     local response=$(ask_swarm "$u_input")
-    echo -e "\e[1;36m[Strategist]:\e[0m $response"
+    echo -e "\n\e[1;36m[Strategist]:\e[0m $response\n"
   done
 }
 
@@ -107,33 +107,31 @@ purge() {
   echo -e "\e[1;33m[Aura]:\e[0m Organizing the stronghold..."
   mkdir -p ~/Stronghold_Images ~/Aura_Archive/droid_themes
   mv ~/Downloads/*.iso ~/Stronghold_Images/ 2>/dev/null
-  # Filter out Diksha Didi files to keep them safe
   find ~ -maxdepth 2 -name "com.android.theme*" -not -path "*Diksha*" -exec mv {} ~/Aura_Archive/droid_themes/ \; 2>/dev/null
   echo -e "\e[1;32m[+] Stronghold Organized. Family archives protected.\e[0m"
 }
 
-# 6. REPO SYNC (Existing Repositories)
+# 6. REPO SYNC (Robust existing repository sync)
 sync_stronghold() {
   echo -e "\e[1;34m[Aura Sovereign]\e[0m Synchronizing stronghold..."
   local repos=(~/Aura_Vault ~/picoclaw ~/Arch-Hyprland)
   for repo in "${repos[@]}"; do
-    if [ -d "$repo/.git" ]; then
+    if [ -d "$repo" ]; then
       cd "$repo"
       git add . 2>/dev/null
-      git commit -m "Aura Sovereign: System Stabilized" 2>/dev/null
-      local br=$(git branch --show-current)
-      git push origin "$br"
+      git commit -m "Aura Sovereign: Zenith State" 2>/dev/null
+      local br=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+      git push origin "$br" --force 2>/dev/null
       cd ~
     fi
   done
-  # Configuration Backup
   cp ~/.zshrc ~/Aura_Vault/zshrc_backup 2>/dev/null
   cp ~/.config/hypr/conf/custom.conf ~/Aura_Vault/custom.conf 2>/dev/null
-  echo -e "\e[1;32m[+] Sync process complete. Check for local errors.\e[0m"
+  echo -e "\e[1;32m[+] Repositories secured.\e[0m"
 }
 
 study() {
-  aura "Analyze my current project files and suggest a tactical B.Tech roadmap."
+  aura "Analyze my current B.Tech project files and suggest a technical roadmap."
 }
 
 fix() {
