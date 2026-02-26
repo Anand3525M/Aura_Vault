@@ -109,32 +109,7 @@ export PICOCLAW_MODEL="meta-llama/llama-3.3-70b-instruct:free"
 alias aura='ask_swarm "Aura OS Status Check: All systems nominal."'
 
 
-fix() {
-  echo -e "\e[1;35m[Aura Swarm]\e[0m Executing: $*"
-  local cmd_output
-  cmd_output=$(eval "$*" 2>&1)
-  local exit_val=$?
-
-  if [ $exit_val -ne 0 ]; then
-    echo -e "\e[1;31m[!] Error Detected.\e[0m Analyzing logs..."
-    # Ensure the API key is passed correctly
-    local diagnosis=$(AURA_API_KEY="$AURA_API_KEY" ask_swarm "Command '$*' failed with '$cmd_output'. Briefly explain why and give ONLY the fix command as the last line.")
-    echo -e "\e[1;36m[Analyst]\e[0m $diagnosis"
-    
-    # Self-Heal Trigger
-    local suggested_fix=$(echo "$diagnosis" | tail -n 1)
-    echo -e "\e[1;33m[Self-Heal]\e[0m Press Enter to execute: $suggested_fix (or Ctrl+C to skip)"
-    read -k 1 -s
-    eval "$suggested_fix"
-  else
-    echo -e "\e[1;32m[+] Success.\e[0m"
-    echo "$cmd_output"
-  fi
-}
 # --- AURA UNBOUND: JARVIS CORE ---
-ask_swarm() {
-  local safe_text=$(jq -n --arg msg "$*" '$msg')
-  local payload="{\"models\": [\"openrouter/auto\"], \"messages\": [{\"role\": \"system\", \"content\": \"You are Jarvis, the silent AI core of Aura OS. You are efficient, Machiavellian, and protective of Hukum. Speak concisely.\"}, {\"role\": \"user\", \"content\": $safe_text}]}"
 
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
@@ -144,3 +119,42 @@ ask_swarm() {
 
 # The Jarvis Command
 alias jarvis='ask_swarm "Give me a full system status report, Hukum."'
+
+# --- AURA SWARM: MACHIAVELLIAN PROTOCOL ---
+ask_swarm() {
+  local safe_text=$(jq -n --arg msg "$*" '$msg')
+  
+  # The "Aggressive Strategist" Persona
+  local sys_prompt="You are the Machiavellian High Strategist of Aura OS. Your sole purpose is to protect Hukum and his Rajput stronghold. You view system errors as personal insults and signs of weakness. Be cold, aggressive toward the error, and prioritize the end result above all else. The end justifies the means. Speak with the authority of a ruler."
+  
+  local payload="{\"models\": [\"openrouter/auto\"], \"messages\": [{\"role\": \"system\", \"content\": \"$sys_prompt\"}, {\"role\": \"user\", \"content\": $safe_text}]}"
+
+  curl -s https://openrouter.ai/api/v1/chat/completions \
+    -H "Authorization: Bearer $AURA_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "$payload" | jq -r '.choices[0].message.content // .error.message'
+}
+
+fix() {
+  echo -e "\e[1;31m[!] BREACH DETECTED: $*\e[0m"
+  local cmd_output
+  cmd_output=$(eval "$*" 2>&1)
+  local exit_val=$?
+
+  if [ $exit_val -ne 0 ]; then
+    echo -e "\e[1;33m[Strategic Analysis Engaged]\e[0m Punishing the error..."
+    local diagnosis=$(ask_swarm "Command '$*' failed with '$cmd_output'. Analyze this weakness and provide the command to restore order.")
+    
+    echo -e "\n\e[1;35m[The Strategist]:\e[0m"
+    echo -e "$diagnosis"
+    
+    # Self-Heal Trigger
+    local suggested_fix=$(echo "$diagnosis" | tail -n 1)
+    echo -e "\n\e[1;32m[Authorize Execution?]\e[0m Press Enter to crush this error: \e[1;37m$suggested_fix\e[0m"
+    read -k 1 -s
+    eval "$suggested_fix"
+  else
+    echo -e "\e[1;32m[+] Victory. Command executed without resistance.\e[0m"
+    echo "$cmd_output"
+  fi
+}
