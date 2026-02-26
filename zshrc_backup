@@ -45,45 +45,47 @@ done
 
 
 
-# --- AURA OS: SUPREME BLITZ CORE ---
+
+
+
+# --- AURA OS: ZENITH SOVEREIGN CORE ---
 export AURA_API_KEY="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"
 
-# 1. INSTANT HEADER (Lightning Cache)
+# 1. INSTANT HEADER
 [ -f ~/.aura_cache ] && cat ~/.aura_cache || echo "Aura Initializing..."
 
 # 2. TACTICAL VOCABULARY (No N/B Keys)
 alias p='sudo pacman'
 alias up='sudo pacman -Syu'
 alias v='nvim'
-alias vi='nvim'
 alias c='clear'
 alias h='htop'
+alias g='gtop'
 alias vault='cd ~/Aura_Vault'
 
-# 3. FIXED TOY MAPPINGS (Animation Fixes)
+# 3. TOY & TOOL MAPPINGS
 alias matrix='neo-matrix -D'
 alias peek='gtop'
 alias pipe='pipes-rs'
-alias wood='hollywood'      # Swapped: Hollywood
-alias grow='cbonsai -l'      # Swapped: Growing Bonsai
+alias grow='cbonsai -l'
+alias wood='hollywood'
 alias vibe='cava'
 alias catcat='nyancat'
-
-# 4. TOOL MAPPINGS
 alias ai='aura'
 alias swarm='picoclaw agent'
 alias see='lsd --tree --depth 2'
 alias idea='nvim ~/Aura_Vault/Aura_Ideas.md'
-alias study='aura "Analyze project scrolls for Hukum."'
 
-# 5. CORE FUNCTIONS
+# 4. CLAUDE 3.5 SONNET INTELLIGENCE
 ask_swarm() {
   local prompt=$(jq -n --arg msg "$*" '$msg')
-  local persona="You are Aura, High Strategist. Loyalty is to Hukum. Speak like a Rajput warrior-king."
+  local persona="You are Aura, High Strategist. Loyalty is to Hukum. Speak like a Rajput warrior-king. Use Claude 3.5 Sonnet's precision."
+  local models="[\"anthropic/claude-3.5-sonnet\", \"google/gemini-2.0-flash-exp:free\"]"
+
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"model\": \"openrouter/auto\", \"messages\": [{\"role\": \"system\", \"content\": \"$persona\"}, {\"role\": \"user\", \"content\": $prompt}]}" | jq -r '.choices[0].message.content // .error.message'
+    -d "{\"models\": $models, \"messages\": [{\"role\": \"system\", \"content\": \"$persona\"}, {\"role\": \"user\", \"content\": $prompt}]}" | jq -r '.choices[0].message.content // .error.message'
 }
 
 aura() {
@@ -95,6 +97,30 @@ aura() {
     echo -e "\e[1;36m[Strategist]:\e[0m $response"
   done
 }
+
+# 5. MULTI-REPO SYNC (Existing Repositories)
+sync() {
+  echo -e "\e[1;34m[Aura Sovereign]\e[0m Synchronizing all stronghold repositories..."
+  local repos=(~/Aura_Vault ~/picoclaw ~/Arch-Hyprland)
+  
+  for repo in "${repos[@]}"; do
+    if [ -d "$repo/.git" ]; then
+      echo -e "\e[1;33m[Syncing]:\e[0m ${repo##*/}"
+      cd "$repo"
+      git add .
+      git commit -m "Aura Zenith: Sovereign System Update"
+      local branch=$(git branch --show-current)
+      git push origin "$branch"
+      cd - > /dev/null
+    fi
+  done
+  
+  # Backup current config to Aura_Vault
+  cp ~/.zshrc ~/Aura_Vault/zshrc_backup 2>/dev/null
+  cp ~/.config/hypr/conf/custom.conf ~/Aura_Vault/custom.conf 2>/dev/null
+  echo -e "\e[1;32m[+] All existing repositories secured to GitHub.\e[0m"
+}
+alias save='sync'
 
 fix() {
   if [ -z "$*" ]; then echo "Aura requires a target."; return; fi
@@ -109,22 +135,4 @@ fix() {
   else
     echo -e "\e[1;32m[+] Victory.\e[0m"
   fi
-}
-
-save() {
-  echo -e "\e[1;34m[Aura Vault]\e[0m Securing configurations..."
-  cd ~/Aura_Vault
-  cp ~/.zshrc ./zshrc_backup
-  cp ~/.config/hypr/conf/custom.conf ./custom.conf
-  git add . ; git commit -m "Aura Supreme: Blitz Core Reforge" ; git push origin main ; cd -
-}
-
-purge() {
-  echo -e "\e[1;33m[Aura]:\e[0m Organizing the stronghold..."
-  mkdir -p ~/Stronghold_Images ~/Aura_Archive/droid_themes
-  # Move ISOs
-  mv ~/Downloads/*.iso ~/Stronghold_Images/ 2>/dev/null
-  # Archive Android Clutter - EXCLUDING Wedding Folder
-  find ~ -maxdepth 2 -name "com.android.theme*" -not -path "*Diksha*" -exec mv {} ~/Aura_Archive/droid_themes/ \; 2>/dev/null
-  echo -e "\e[1;32m[+] Stronghold Organized. Family archives untouched.\e[0m"
 }
