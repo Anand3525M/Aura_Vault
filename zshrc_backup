@@ -87,7 +87,7 @@ alias catcat='nyancat'
 alias purge='sudo pacman -Rns $(pacman -Qtdq); sudo paccache -rk1; sudo journalctl --vacuum-size=50M'
 alias save='bash ~/.config/save.sh'
 # --- OPENCLAW AI INTEGRATION ---
-export OPENCLAW_DEFAULT_MODEL="openrouter/google/gemini-2.0-flash-exp:free"
+export OPENCLAW_DEFAULT_MODEL="openrouter/meta-llama/llama-3.3-70b-instruct:free"
 
 # The Aura Command
 
@@ -98,42 +98,43 @@ export OPENCLAW_DEFAULT_MODEL="openrouter/google/gemini-2.0-flash-exp:free"
 # Autonomous Auto-Debug Loop
 export OPENAI_API_KEY="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"
 export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
-export PICOCLAW_MODEL="google/gemini-2.0-flash-exp:free"
+export PICOCLAW_MODEL="meta-llama/llama-3.3-70b-instruct:free"
 
-# --- PURE LINUX SWARM (ZERO RAM OVERHEAD) ---
+
+
+# --- AURA STABLE SWARM CORE ---
 ask_swarm() {
-  # Safely encode the terminal output so quotes don't break the JSON payload
-  local safe_text
-  safe_text=$(jq -n --arg msg "$*" '$msg')
-  
-  # Direct API connection to OpenRouter (Gemini Flash)
+  local prompt="$*"
+  # Direct simple call to OpenRouter Auto-Router
   curl -s https://openrouter.ai/api/v1/chat/completions \
-    -H "Authorization: Bearer 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" \
+    -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"model\": \"google/gemini-2.0-flash-exp:free\", \"messages\": [{\"role\": \"user\", \"content\": $safe_text}]}" | jq -r '.choices[0].message.content // .error.message'
+    -d "{
+      \"model\": \"openrouter/auto\",
+      \"messages\": [{\"role\": \"user\", \"content\": \"$prompt\"}]
+    }" | jq -r '.choices[0].message.content // .error.message'
 }
 
-# The Aura Command
-alias aura='ask_swarm "Aura OS Systems Online. Waiting for input."'
+alias aura='ask_swarm "Aura OS Status Check: All systems nominal."'
 
-# Autonomous Auto-Debug Loop
 fix() {
-  echo -e "\e[1;35m[Swarm Gateway]\e[0m Executing: $*"
-  local output
-  output=$(eval "$*" 2>&1)
-  local exit_code=$?
+  echo -e "\e[1;35m[Aura Swarm]\e[0m Executing: $*"
+  local cmd_output
+  cmd_output=$(eval "$*" 2>&1)
+  local status=$?
 
-  if [ $exit_code -ne 0 ]; then
-    echo -e "\e[1;31m[!] Execution Failed (Code: $exit_code). Deploying Swarm Analyst...\e[0m"
-    echo -e "\e[1;36m[System Log]\e[0m $output"
-    echo -e "\e[1;33m----------------------------------------\e[0m"
+  if [ $status -ne 0 ]; then
+    echo -e "\e[1;31m[!] Error Detected.\e[0m Analyzing logs..."
+    local diagnosis=$(ask_swarm "Command '$*' failed with '$cmd_output'. Briefly explain why and give ONLY the fix command as the last line.")
+    echo -e "\e[1;36m[Analyst]\e[0m $diagnosis"
     
-    local prompt="I ran the command: '$*'. It failed with: '$output'. You are a Senior Arch Linux engineer. Give a 1-sentence explanation of why it broke, then the exact terminal command to fix it. Do not use markdown formatting."
-    
-    # Request the fix directly from the Swarm API
-    ask_swarm "$prompt"
+    # Self-Heal Trigger
+    local suggested_fix=$(echo "$diagnosis" | tail -n 1)
+    echo -e "\e[1;33m[Self-Heal]\e[0m Press Enter to execute: $suggested_fix (or Ctrl+C to skip)"
+    read
+    eval "$suggested_fix"
   else
-    echo -e "\e[1;32m[+] Execution Succeeded.\e[0m"
-    echo "$output"
+    echo -e "\e[1;32m[+] Success.\e[0m"
+    echo "$cmd_output"
   fi
 }
