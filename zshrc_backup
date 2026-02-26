@@ -48,10 +48,11 @@ done
 
 
 
+
 # --- AURA OS: ZENITH SOVEREIGN CORE ---
 export AURA_API_KEY="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"
 
-# 1. INSTANT HEADER
+# 1. INSTANT HEADER (Lightning Cache)
 [ -f ~/.aura_cache ] && cat ~/.aura_cache || echo "Aura Initializing..."
 
 # 2. TACTICAL VOCABULARY (No N/B Keys)
@@ -67,8 +68,8 @@ alias vault='cd ~/Aura_Vault'
 alias matrix='neo-matrix -D'
 alias peek='gtop'
 alias pipe='pipes-rs'
-alias grow='cbonsai -l'
 alias wood='hollywood'
+alias grow='cbonsai -l'
 alias vibe='cava'
 alias catcat='nyancat'
 alias ai='aura'
@@ -107,8 +108,8 @@ sync() {
     if [ -d "$repo/.git" ]; then
       echo -e "\e[1;33m[Syncing]:\e[0m ${repo##*/}"
       cd "$repo"
-      git add .
-      git commit -m "Aura Zenith: Sovereign System Update"
+      git add . 2>/dev/null
+      git commit -m "Aura Zenith: Sovereign System Update" 2>/dev/null
       local branch=$(git branch --show-current)
       git push origin "$branch"
       cd - > /dev/null
@@ -135,4 +136,11 @@ fix() {
   else
     echo -e "\e[1;32m[+] Victory.\e[0m"
   fi
+}
+
+purge() {
+  echo -e "\e[1;33m[Aura]:\e[0m Moving ISOs to vault..."
+  mkdir -p ~/Stronghold_Images
+  mv ~/Downloads/*.iso ~/Stronghold_Images/ 2>/dev/null
+  echo -e "\e[1;32m[+] Stronghold organized. Family archives protected.\e[0m"
 }
