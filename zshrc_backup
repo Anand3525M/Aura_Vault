@@ -103,15 +103,6 @@ export PICOCLAW_MODEL="meta-llama/llama-3.3-70b-instruct:free"
 
 
 # --- AURA STABLE SWARM CORE ---
-ask_swarm() {
-  local prompt="$*"
-  # Direct simple call to OpenRouter Auto-Router
-  curl -s https://openrouter.ai/api/v1/chat/completions \
-    -H "Authorization: Bearer $AURA_API_KEY" \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"model\": \"openrouter/auto\",
-      \"messages\": [{\"role\": \"user\", \"content\": \"$prompt\"}]
     }" | jq -r '.choices[0].message.content // .error.message'
 }
 
@@ -140,3 +131,16 @@ fix() {
     echo "$cmd_output"
   fi
 }
+# --- AURA UNBOUND: JARVIS CORE ---
+ask_swarm() {
+  local safe_text=$(jq -n --arg msg "$*" '$msg')
+  local payload="{\"models\": [\"openrouter/auto\"], \"messages\": [{\"role\": \"system\", \"content\": \"You are Jarvis, the silent AI core of Aura OS. You are efficient, Machiavellian, and protective of Hukum. Speak concisely.\"}, {\"role\": \"user\", \"content\": $safe_text}]}"
+
+  curl -s https://openrouter.ai/api/v1/chat/completions \
+    -H "Authorization: Bearer $AURA_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "$payload" | jq -r '.choices[0].message.content // .error.message'
+}
+
+# The Jarvis Command
+alias jarvis='ask_swarm "Give me a full system status report, Hukum."'
