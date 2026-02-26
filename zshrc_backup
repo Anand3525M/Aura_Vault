@@ -50,6 +50,7 @@ done
 
 
 
+
 # --- AURA OS: SOVEREIGN CORE ---
 export AURA_API_KEY="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"
 
@@ -69,8 +70,8 @@ alias vault='cd ~/Aura_Vault'
 alias matrix='neo-matrix -D'
 alias peek='gtop'
 alias pipe='pipes-rs'
-alias grow='cbonsai -l'
-alias wood='hollywood'
+alias wood='hollywood'      # Swapped per Hukum's order
+alias grow='cbonsai -l'     # Swapped per Hukum's order
 alias vibe='cava'
 alias catcat='nyancat'
 alias ai='aura'
@@ -82,12 +83,12 @@ alias idea='nvim ~/Aura_Vault/Aura_Ideas.md'
 ask_swarm() {
   local prompt=$(jq -n --arg msg "$*" '$msg')
   local persona="You are Aura, High Strategist. Speak like a Rajput warrior-king. Use the precision of Claude 3.5 Sonnet."
-  local models="[\"anthropic/claude-3.5-sonnet\", \"google/gemini-2.0-flash-exp:free\"]"
-
+  
+  # Multi-model routing: Claude 3.5 Sonnet primary
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"models\": $models, \"messages\": [{\"role\": \"system\", \"content\": \"$persona\"}, {\"role\": \"user\", \"content\": $prompt}]}" | jq -r '.choices[0].message.content // .error.message'
+    -d "{\"model\": \"anthropic/claude-3.5-sonnet\", \"messages\": [{\"role\": \"system\", \"content\": \"$persona\"}, {\"role\": \"user\", \"content\": $prompt}]}" | jq -r '.choices[0].message.content // .error.message'
 }
 
 aura() {
@@ -100,35 +101,38 @@ aura() {
   done
 }
 
-# 5. SOVEREIGN PURGE (Excludes Family Wedding Files)
+# 5. SOVEREIGN PURGE (Protects Family Archives)
 purge() {
   echo -e "\e[1;33m[Aura]:\e[0m Organizing the stronghold..."
   mkdir -p ~/Stronghold_Images ~/Aura_Archive/droid_themes
   mv ~/Downloads/*.iso ~/Stronghold_Images/ 2>/dev/null
-  # Filter out the Diksha Didi folder to protect it
+  # Filter out Diksha Didi files to keep them safe
   find ~ -maxdepth 2 -name "com.android.theme*" -not -path "*Diksha*" -exec mv {} ~/Aura_Archive/droid_themes/ \; 2>/dev/null
   echo -e "\e[1;32m[+] Stronghold Organized. Family archives protected.\e[0m"
 }
 
-# 6. REPO SYNC (Existing Repositories)
-save() {
-  echo -e "\e[1;34m[Aura Vault]\e[0m Securing configurations..."
+# 6. REPO SYNC (Existing Repositories Only)
+sync_stronghold() {
+  echo -e "\e[1;34m[Aura Sovereign]\e[0m Synchronizing stronghold..."
   local repos=(~/Aura_Vault ~/picoclaw ~/Arch-Hyprland)
   for repo in "${repos[@]}"; do
     if [ -d "$repo/.git" ]; then
       cd "$repo"
       git add .
-      git commit -m "Aura Sovereign: System Stabilized"
+      git commit -m "Aura Zenith: Sovereign System Update"
       local br=$(git branch --show-current)
       git push origin "$br"
       cd ~
     fi
   done
-  echo -e "\e[1;32m[+] All repositories synchronized.\e[0m"
+  # Configuration Backup
+  cp ~/.zshrc ~/Aura_Vault/zshrc_backup 2>/dev/null
+  cp ~/.config/hypr/conf/custom.conf ~/Aura_Vault/custom.conf 2>/dev/null
+  echo -e "\e[1;32m[+] Repositories secured.\e[0m"
 }
 
 study() {
-  aura "Analyze my current B.Tech project files and suggest a tactical roadmap."
+  aura "Analyze my current project files and suggest a tactical B.Tech roadmap."
 }
 
 fix() {
@@ -145,3 +149,6 @@ fix() {
     echo -e "\e[1;32m[+] Victory.\e[0m"
   fi
 }
+
+# Alias mapping at the end to prevent parse errors
+alias save='sync_stronghold'
