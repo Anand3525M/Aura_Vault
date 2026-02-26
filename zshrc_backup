@@ -74,3 +74,15 @@ fix() {
 
 # Run Bio on Login
 aura_bio
+
+# Primary Swarm Trigger for Super+A
+aura() {
+  if [ -z "$1" ]; then
+    echo -e "\e[1;35m[Aura Strategist]:\e[0m Waiting for your directive, Hukum."
+    echo -n "> "
+    read user_input
+    ask_swarm "$user_input"
+  else
+    ask_swarm "$*"
+  fi
+}
