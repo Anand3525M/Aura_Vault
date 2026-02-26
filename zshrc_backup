@@ -51,6 +51,7 @@ done
 
 
 
+
 # --- AURA OS: SOVEREIGN CORE ---
 export AURA_API_KEY="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"
 
@@ -84,7 +85,7 @@ ask_swarm() {
   local prompt=$(jq -n --arg msg "$*" '$msg')
   local persona="You are Aura, High Strategist. Speak like a Rajput warrior-king. Use the precision of Claude 3.5 Sonnet."
   
-  # Multi-model routing: Claude 3.5 Sonnet primary
+  # Explicit Claude 3.5 Sonnet Targeting
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
@@ -111,15 +112,15 @@ purge() {
   echo -e "\e[1;32m[+] Stronghold Organized. Family archives protected.\e[0m"
 }
 
-# 6. REPO SYNC (Existing Repositories Only)
+# 6. REPO SYNC (Existing Repositories)
 sync_stronghold() {
   echo -e "\e[1;34m[Aura Sovereign]\e[0m Synchronizing stronghold..."
   local repos=(~/Aura_Vault ~/picoclaw ~/Arch-Hyprland)
   for repo in "${repos[@]}"; do
     if [ -d "$repo/.git" ]; then
       cd "$repo"
-      git add .
-      git commit -m "Aura Zenith: Sovereign System Update"
+      git add . 2>/dev/null
+      git commit -m "Aura Sovereign: System Stabilized" 2>/dev/null
       local br=$(git branch --show-current)
       git push origin "$br"
       cd ~
@@ -128,7 +129,7 @@ sync_stronghold() {
   # Configuration Backup
   cp ~/.zshrc ~/Aura_Vault/zshrc_backup 2>/dev/null
   cp ~/.config/hypr/conf/custom.conf ~/Aura_Vault/custom.conf 2>/dev/null
-  echo -e "\e[1;32m[+] Repositories secured.\e[0m"
+  echo -e "\e[1;32m[+] Sync process complete. Check for local errors.\e[0m"
 }
 
 study() {
@@ -150,5 +151,4 @@ fix() {
   fi
 }
 
-# Alias mapping at the end to prevent parse errors
 alias save='sync_stronghold'
