@@ -86,3 +86,9 @@ alias vibe='bash ~/.config/vibe.sh'
 alias catcat='nyancat'
 alias purge='sudo pacman -Rns $(pacman -Qtdq); sudo paccache -rk1; sudo journalctl --vacuum-size=50M'
 alias save='bash ~/.config/save.sh'
+# --- OPENCLAW AI INTEGRATION ---
+export OPENROUTER_API_KEY="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"
+export OPENCLAW_DEFAULT_MODEL="openrouter/google/gemini-2.0-flash-exp:free"
+
+# The Aura Command
+alias aura='openclaw agent -m "Aura OS Systems Online. Waiting for input."'
