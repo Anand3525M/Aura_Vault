@@ -35,10 +35,11 @@ done
 
 
 
-# --- AURA OS: ZENITH PROTOCOL ---
+
+# --- AURA OS: ZENITH STABILIZED ---
 export AURA_API_KEY="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"
 
-# Aura Vocabulary (No N or B keys)
+# Tactical Vocabulary (No N/B Keys)
 alias p='sudo pacman'
 alias up='sudo pacman -Syu'
 alias v='vi'
@@ -46,7 +47,7 @@ alias c='clear'
 alias h='htop'
 alias vault='cd ~/Aura_Vault'
 
-# Tactical Dashboard
+# Tactical Header (Aura Ready)
 AURA_WEATHER=$(curl -s "wttr.in/Ghaziabad?format=%c%t")
 AURA_RAM=$(free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }')
 AURA_UP=$(uptime -p | sed 's/up //; s/ hours/h/; s/ minutes/m/')
@@ -56,7 +57,7 @@ echo -e "\e[1;34m[Tools]\e[0m fix | aura | swarm | see | idea | study | save | p
 
 ask_swarm() {
   local prompt=$(jq -n --arg msg "$*" '$msg')
-  local persona="You are Aura, the High Strategist. Speak like a Rajput warrior-king: cold, authoritative, and concise."
+  local persona="You are Aura, the High Strategist. Speak like a Rajput warrior-king: cold, authoritative, and concise. Vir Bhogya Vasundhara."
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
@@ -70,7 +71,7 @@ aura() {
   else
     ask_swarm "$*"
   fi
-  zsh
+  zsh # Keeps the window open
 }
 
 fix() {
