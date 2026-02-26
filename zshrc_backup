@@ -31,20 +31,32 @@ done
 
 
 
-# --- AURA OS: TACTICAL DASHBOARD ---
+
+
+
+# --- AURA OS: ZENITH STABILIZED ---
 export AURA_API_KEY="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"
 
-# --- THE TWO-LINE TACTICAL HEADER ---
+# Tactical Vocabulary (No N/B Keys)
+alias p='sudo pacman'
+alias up='sudo pacman -Syu'
+alias v='nvim'
+alias c='clear'
+alias h='htop'
+alias vault='cd ~/Aura_Vault'
+
+# Tactical Header
+AURA_WEATHER=$(curl -s "wttr.in/Ghaziabad?format=%c%t")
 AURA_RAM=$(free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }')
-AURA_DSK=$(df -h / | awk 'NR==2 {print $4}' | sed 's/G//')
 AURA_UP=$(uptime -p | sed 's/up //; s/ hours/h/; s/ minutes/m/')
 
-echo -e "\e[1;35m[Aura Strategist]\e[0m \e[1;32mfix\e[0m | \e[1;32maura\e[0m | \e[1;32msee\e[0m | \e[1;33midea\e[0m | \e[1;33mstudy\e[0m | \e[1;33mlookup\e[0m | \e[1;36mstatus\e[0m | \e[1;31msave\e[0m"
-echo -e "\e[1;34m[Aura Fortress]  \e[0m \e[1;32mmatrix\e[0m | \e[1;32mpeek\e[0m | \e[1;32mvibe\e[0m | \e[1;31mpurge\e[0m | \e[1;33mRAM: ${AURA_RAM}\e[0m | \e[1;33mDSK: ${AURA_DSK}G\e[0m | \e[1;33mUp: ${AURA_UP}\e[0m"
+echo -e "\e[1;35m[Aura Ready]\e[0m \e[1;32m$AURA_WEATHER\e[0m | \e[1;33mRAM: $AURA_RAM\e[0m | \e[1;36mUp: $AURA_UP\e[0m"
+echo -e "\e[1;34m[Tactical Tools]\e[0m fix | aura | swarm | see | idea | study | save | purge"
 
 ask_swarm() {
   local prompt=$(jq -n --arg msg "$*" '$msg')
-  local persona=$(jq -r '.sys_prompt' ~/.aura_brain.json 2>/dev/null || echo "You are Aura.")
+  local persona="You are Aura, the High Strategist of the Aura OS stronghold. Loyalty is to Hukum. Speak like a Rajput warrior-king: cold, authoritative, and concise. Vir Bhogya Vasundhara."
+  
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
@@ -53,29 +65,40 @@ ask_swarm() {
 
 aura() {
   if [ -z "$1" ]; then
-    echo -e "\e[1;35m[Aura]:\e[0m Standing by for Hukum."
+    echo -e "\e[1;35m[Aura]:\e[0m Waiting for Hukum..."
     echo -n "> " ; read user_input
     ask_swarm "$user_input"
   else
     ask_swarm "$*"
   fi
+  # Keep shell alive
+  zsh
 }
 
 fix() {
-  if [ -z "$*" ]; then echo "Aura requires a target to analyze."; return; fi
+  if [ -z "$*" ]; then echo "Aura requires a target."; return; fi
   echo -e "\e[1;31m[!] BREACH DETECTED: $*\e[0m"
   local cmd_output=$(eval "$*" 2>&1)
   local exit_val=$?
   if [ $exit_val -ne 0 ]; then
-    echo -e "\e[1;33m[Analyzing Weakness...]\e[0m"
-    local diagnosis=$(ask_swarm "Command '$*' failed with '$cmd_output'. Analyze and give ONLY the fix command as the last line.")
+    echo -e "\e[1;33m[Analyzing...]\e[0m"
+    local diagnosis=$(ask_swarm "Command '$*' failed with '$cmd_output'. Give ONLY the fix command as the last line.")
     echo -e "\n\e[1;35m[Aura]:\e[0m $diagnosis"
     local suggested_fix=$(echo "$diagnosis" | tail -n 1)
-    echo -e "\n\e[1;32m[Crush Error?]\e[0m Press Enter to execute: $suggested_fix"
+    echo -e "\n\e[1;32m[Authorize?]\e[0m Hit Enter to execute: $suggested_fix"
     read -k 1 -s ; eval "$suggested_fix"
   else
-    echo -e "\e[1;32m[+] Victory.\e[0m" ; echo "$cmd_output"
+    echo -e "\e[1;32m[+] Victory.\e[0m"
   fi
 }
 
-alias status='aura "Give me a strategic overview of the system state, Strategist."'
+save() {
+  echo -e "\e[1;34m[Aura Vault]\e[0m Securing configurations..."
+  cd ~/Aura_Vault
+  cp ~/.zshrc ./zshrc_backup
+  cp ~/.config/hypr/conf/custom.conf ./custom.conf
+  git add .
+  git commit -m "Aura Zenith: Master Stability Update"
+  git push origin main
+  cd -
+}
