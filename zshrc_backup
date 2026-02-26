@@ -87,8 +87,34 @@ alias catcat='nyancat'
 alias purge='sudo pacman -Rns $(pacman -Qtdq); sudo paccache -rk1; sudo journalctl --vacuum-size=50M'
 alias save='bash ~/.config/save.sh'
 # --- OPENCLAW AI INTEGRATION ---
-export OPENROUTER_API_KEY="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"
 export OPENCLAW_DEFAULT_MODEL="openrouter/google/gemini-2.0-flash-exp:free"
 
 # The Aura Command
-alias aura='openclaw agent -m "Aura OS Systems Online. Waiting for input."'
+
+# --- AURA OS NATIVE SWARM MODE ---
+export OPENROUTER_API_KEY="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"
+
+# The Swarm Coordinator Alias
+alias aura='picoclaw agent -m "Aura OS Swarm Coordinator Online. System diagnostics ready. Waiting for task." 2>/dev/null'
+
+# Autonomous Auto-Debug Loop
+fix() {
+  echo -e "\e[1;35m[Swarm Gateway]\e[0m Executing: $*"
+  
+  # Agent A: Execution & Telemetry Capture
+  local output
+  output=$(eval "$*" 2>&1)
+  local exit_code=$?
+
+  if [ $exit_code -ne 0 ]; then
+    echo -e "\e[1;31m[!] Execution Failed (Code: $exit_code). Deploying Swarm Analyst...\e[0m"
+    echo -e "\e[1;36m[System Log]\e[0m $output"
+    echo -e "\e[1;33m----------------------------------------\e[0m"
+    
+    # Agent B: PicoClaw Diagnostics & Resolution
+    picoclaw agent -m "I ran the command: '$*'. It failed with this exact output: '$output'. You are a Senior Arch Linux engineer. Give me a 1-sentence explanation of why it broke, followed immediately by the exact terminal command to fix it. Do not use markdown formatting for the command." 2>/dev/null
+  else
+    echo -e "\e[1;32m[+] Execution Succeeded.\e[0m"
+    echo "$output"
+  fi
+}
