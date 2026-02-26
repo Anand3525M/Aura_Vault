@@ -36,10 +36,11 @@ done
 
 
 
-# --- AURA OS: ZENITH STABILIZED ---
+
+# --- AURA OS: THE ZENITH CORE ---
 export AURA_API_KEY="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"
 
-# Tactical Vocabulary (No N/B Keys)
+# Aura Vocabulary (No N or B keys)
 alias p='sudo pacman'
 alias up='sudo pacman -Syu'
 alias v='vi'
@@ -51,13 +52,14 @@ alias vault='cd ~/Aura_Vault'
 AURA_WEATHER=$(curl -s "wttr.in/Ghaziabad?format=%c%t")
 AURA_RAM=$(free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }')
 AURA_UP=$(uptime -p | sed 's/up //; s/ hours/h/; s/ minutes/m/')
+AURA_ZRAM=$(zramctl | awk 'NR==2 {print $3}')
 
-echo -e "\e[1;35m[Aura Ready]\e[0m \e[1;32m$AURA_WEATHER\e[0m | \e[1;33mRAM: $AURA_RAM\e[0m | \e[1;36mUp: $AURA_UP\e[0m"
+echo -e "\e[1;35m[Aura Ready]\e[0m \e[1;32m$AURA_WEATHER\e[0m | \e[1;33mRAM: $AURA_RAM\e[0m | \e[1;36mUp: $AURA_UP\e[0m | \e[1;34mZRAM: $AURA_ZRAM\e[0m"
 echo -e "\e[1;34m[Tools]\e[0m fix | aura | swarm | see | idea | study | save | purge"
 
 ask_swarm() {
   local prompt=$(jq -n --arg msg "$*" '$msg')
-  local persona="You are Aura, the High Strategist. Speak like a Rajput warrior-king: cold, authoritative, and concise. Vir Bhogya Vasundhara."
+  local persona="You are Aura, the High Strategist. Loyalty is to Hukum. Errors are weaknesses. Speak like a Rajput warrior-king: cold, authoritative, and concise. Vir Bhogya Vasundhara."
   curl -s https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $AURA_API_KEY" \
     -H "Content-Type: application/json" \
@@ -71,7 +73,8 @@ aura() {
   else
     ask_swarm "$*"
   fi
-  zsh # Keeps the window open
+  echo -e "\n\e[1;33m[Aura]:\e[0m Task complete. Type 'exit' to close window."
+  zsh
 }
 
 fix() {
@@ -94,5 +97,5 @@ save() {
   cd ~/Aura_Vault
   cp ~/.zshrc ./zshrc_backup
   cp ~/.config/hypr/conf/custom.conf ./custom.conf
-  git add . ; git commit -m "Aura Zenith: Fixed Terminal Bug" ; git push origin main ; cd -
+  git add . ; git commit -m "Aura Zenith: Total Integration" ; git push origin main ; cd -
 }
